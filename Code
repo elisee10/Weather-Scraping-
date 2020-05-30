@@ -1,0 +1,31 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+#Website to be scaped and all the varabes that will be scraped
+website = requests.get('https://forecast.weather.gov/MapClick.php?lat=38.8904&lon=-77.032#.XSi6wOhKiK0')
+soup = BeautifulSoup(website.content, 'html.parser')
+week = soup.find(class_='panel-body', id='seven-day-forecast-body')
+day = week.find_all(class_='tombstone-container')
+#print(day[0].find(class_='period-name').get_text())
+#print(day[0].find(class_='short-desc').get_text())
+#print(day[0].find(class_='temp').get_text())
+
+#Putting in a list
+period_names = [day.find(class_='period-name').get_text()for day in day]
+short_descriptions = [day.find(class_='period-name').get_text()for day in day]
+temperature = [day.find(class_='temp').get_text()for day in day]
+
+#print(period_names)
+#print(short_descriptions)
+#print(temperature)
+
+weather_stuff = pd.DataFrame(
+    {
+    'period': period_names,
+    'Short_description': short_descriptions,
+    'Temperatures': temperature,
+     })
+
+print(weather_stuff)
+weather_stuff.to_csv('Weather.csv')
